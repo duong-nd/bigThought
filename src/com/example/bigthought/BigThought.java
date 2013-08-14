@@ -2,7 +2,10 @@ package com.example.bigthought;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+
+//import com.androidworks.R;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -16,6 +19,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.Menu;
@@ -33,7 +37,7 @@ public class BigThought extends Activity {
 	final int PHOTO_PICKED = 4;
 	private Uri picUri;
 	private Bitmap temp;
-
+	private static final String TEMP_PHOTO_FILE = "tempPhoto.jpg";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,23 +86,25 @@ public class BigThought extends Activity {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			share();
+
 		}
 	};
 
 	private void share() {
-		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-
-		Bitmap pic = temp;
-		String path = Images.Media.insertImage(getContentResolver(), pic,
-				"blah", null);
-		Uri uri = Uri.parse(path);
-
-		sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-				"Subject here");
-		sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
-		sharingIntent.setType("image/*");
-		startActivity(Intent.createChooser(sharingIntent, "Share via"));
+		// Intent sharingIntent = new
+		// Intent(android.content.Intent.ACTION_SEND);
+		//
+		// Bitmap pic = temp;
+		// String path = Images.Media.insertImage(getContentResolver(), pic,
+		// "blah", null);
+		// Uri uri = Uri.parse(path);
+		//
+		// sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+		// "Subject here");
+		// sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
+		// sharingIntent.setType("image/*");
+		// startActivity(Intent.createChooser(sharingIntent, "Share via"));
+		
 	}
 
 	@Override
@@ -117,36 +123,18 @@ public class BigThought extends Activity {
 			Bundle extras = data.getExtras();
 			// get the cropped bitmap
 			Bitmap thePic = extras.getParcelable("data");
-			Bitmap bmp = postProcessing(this, thePic, "Inspring as ****");
+			Bitmap bmp = postProcessing(this, thePic, "DEEPLY YOLO");
 			try {
-				// File f = new File(this.getCacheDir(),"text.jpg");
-				// f.createNewFile();
-				// //Convert bitmap to byte array
-				// ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				// bmp.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for
-				// PNG*/, bos);
-				// byte[] bitmapdata = bos.toByteArray();
-				//
-				// //write the bytes in file
-				// FileOutputStream fos = new FileOutputStream(f);
-				// fos.write(bitmapdata);
-				// fos.close();
-				Bitmap out = bmp;
-				String path = Environment.getExternalStorageDirectory()
-						.toString();
-				Log.d("TestFileName", "HelloNham" + path);
-				OutputStream fOut = null;
-				File file = new File(path, "/test/hellomoto123.jpg");
-				Boolean bol=file.createNewFile();
-				Log.d("TestFileName", "bool" + bol.toString());
-				String src = file.getAbsolutePath();
-				Log.d("TestFileName", "HelloNham" + src);
-
-				fOut = new FileOutputStream(file);
-
-				out.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
-				fOut.flush();
-				fOut.close();
+				File testFolder=new File(Environment.getExternalStorageDirectory().getPath()+"/test123");
+				testFolder.mkdirs();
+				//VERY IMPORTANT
+				testFolder.canRead();
+				try {
+				       FileOutputStream out = new FileOutputStream(testFolder.getAbsolutePath()+"/x.jpg");
+				       bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+				} catch (Exception e) {
+				       e.printStackTrace();
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -183,7 +171,8 @@ public class BigThought extends Activity {
 			cropIntent.putExtra("outputY", 300);
 			// retrieve data on return
 			cropIntent.putExtra("return-data", true);
-
+			//cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, getTempUri());
+            cropIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
 			// End test
 			// done cropping, return out the result
 			startActivityForResult(cropIntent, PIC_CROP);
@@ -218,6 +207,7 @@ public class BigThought extends Activity {
 			Bitmap frame = Bitmap.createBitmap(330, 330,
 					Bitmap.Config.ARGB_8888);
 			Canvas canvas = new Canvas(frame);
+			canvas.drawColor(getResources().getColor(R.color.light));
 			canvas.drawBitmap(bitmap, 15, 15, null);
 			// done testing frame
 
