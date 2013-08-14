@@ -15,6 +15,18 @@
             android:layout_height="wrap_content"
             android:text="@string/openButton" />
 
+        <Button
+            android:id="@+id/shareButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shareButton" />
+
+        <Button
+            android:id="@+id/cameraButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cameraButton" />
+
     </TableRow>
 
     <TableRow
